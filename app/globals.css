@@ -17,3 +17,6 @@ li:hover {
     background-color: var(--color-neutral-600) /* oklch(43.9% 0 0) = #525252 */;
     opacity: 0.8;
 }
+.box{
+  box-shadow: 1px 5px 100px 5px purple;
+}

@@ -1,50 +1,49 @@
 "use client";
 import React, { useState } from "react";
 
-const Register = () => {
+const Register = ({ Visible, setVisible }) => {
       const [registerusername, setregisterusername] = useState("");
-      const [registeremail, setregisteremail] = useState("");
-      const [registerpassword, setregisterpassword] = useState("");
-      const [regusererror, setregusererror] = useState("")
-      const [regemailerror, setregemailerror] = useState("")
-      const [regpasserror, setregpasserror] = useState("")
-    
-    
-    
-       const valregisterusername = (e) => {
-        setregisterusername(e.target.value);
-        if(e.target.value.length<5)
-          setregusererror("username must be 5 char")
-        
-        else
-          setregusererror("");
-      }
-    
-    
-    
-      const valregisteremail = (e) => {
-        setregisteremail(e.target.value);
-         if(e.target.value.length<8)
-          setregemailerror("email must be 8 char")
-         else if(!e.target.value.endsWith("@gmail.com"))
-          setregemailerror("Invalid email (must end with @gmail.com)");
-        else
-          setregemailerror("");
-      }
-    
-      const valregisterpassword = (e) => {
-        setregisterpassword(e.target.value);
-        if(e.target.value.length<8)
-          setregpasserror("password must be 8 char")
-    
-        else
-          setregpasserror("");
-    
-      }
-    
+           const [registeremail, setregisteremail] = useState("");
+           const [registerpassword, setregisterpassword] = useState("");
+           const [regusererror, setregusererror] = useState("")
+           const [regemailerror, setregemailerror] = useState("")
+           const [regpasserror, setregpasserror] = useState("")
+         
+         
+         
+            const valregisterusername = (e) => {
+             setregisterusername(e.target.value);
+             if(e.target.value.length<5)
+               setregusererror("username must be 5 char")
+             
+             else
+               setregusererror("");
+           }
+         
+         
+         
+           const valregisteremail = (e) => {
+             setregisteremail(e.target.value);
+              if(e.target.value.length<8)
+               setregemailerror("email must be 8 char")
+              else if(!e.target.value.endsWith("@gmail.com"))
+               setregemailerror("Invalid email (must end with @gmail.com)");
+             else
+               setregemailerror("");
+           }
+         
+           const valregisterpassword = (e) => {
+             setregisterpassword(e.target.value);
+             if(e.target.value.length<8)
+               setregpasserror("password must be 8 char")
+         
+             else
+               setregpasserror("");
+         
+           }
   return (
 <>
- <div className="h-full w-1/2 flex flex-col items-center top-20 relative  gap-3 ">
+ <div className="h-full w-1/2 flex flex-col items-center justify-center relative  gap-3 ">
           <div className="text-black text-4xl font-semibold mb-8 ">
             REGISTER
           </div>
@@ -78,7 +77,7 @@ const Register = () => {
             />
             <div className="text-red-600">{regpasserror}</div>
           </div>
-          <button className="bg-purple-500 w-[60%] py-2.5 text-white rounded-2xl text-xl">
+          <button onClick={() => setVisible(false)} className="bg-purple-500 w-[60%] py-2.5 text-white rounded-2xl text-xl">
             Register
           </button>
           <div className="text-gray-500">or continue with</div>

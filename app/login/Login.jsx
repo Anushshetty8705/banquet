@@ -2,8 +2,9 @@
 import React, { useState } from "react";
 
 
-const Login = () => {
-    const [loginEmail, setLoginEmail] = useState("");
+const Login = ({ Visible, setVisible }) => {
+  
+  const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [logemailerror, setlogemailerror] = useState("");
   const [logpasserror, setlogpasserror] = useState("");
@@ -33,10 +34,9 @@ const Login = () => {
       setlogpasserror("");
   }
 
-
   return (
 <>
-<div className="h-full w-1/2 flex flex-col items-center top-20 relative  gap-3 ">
+<div className="h-full w-1/2 flex flex-col items-center  justify-center  gap-3 ">
           <div className="text-black text-4xl font-semibold mb-8 ">LOGIN</div>
           <div className="w-[80%] mb-8">
             <input
@@ -59,7 +59,7 @@ const Login = () => {
             <div className="text-red-600">{logpasserror}</div>
           </div>
           <div className="text-gray-500">Froget Password?</div>
-          <button className="bg-purple-500 w-[60%] py-2.5 text-white rounded-2xl text-xl">
+          <button onClick={() => setVisible(false)} className="bg-purple-500 w-[60%] py-2.5 text-white rounded-2xl text-xl">
             Login In
           </button>
           <div className="text-gray-500">or continue with</div>

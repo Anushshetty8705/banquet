@@ -5,22 +5,28 @@ import Login from "./Login";
 
 
 
-const Page = () => {
+
+
+const Page = ({ Visible, setVisible }) => {
   const [active, setActive] = useState(0);
+  
+      
+    
 
   return (
     <div className="flex items-center justify-center h-screen">
       {/* Container with two equal halves */}
-      <div className="h-[70vh] w-[50vw] flex relative rounded-4xl bg-white overflow-hidden">
-       <Register/>
-        <Login/>
+      <div className="h-[70vh] w-[50vw] flex relative rounded-4xl bg-white overflow-hidden box">
+      <Register  Visible={Visible} setVisible={setVisible}/>
+      <Login  Visible={Visible} setVisible={setVisible}/>
 
         <div
-          className={`absolute top-0 h-full w-1/2 bg-purple-500 cursor-pointer transition-all duration-500
-            ${active === 0 ? "rounded-r-[70px]" : "rounded-l-[70px]"}
-          `}
-          style={{ left: active === 0 ? "0" : "25vw" }}
-        >
+  className={`absolute top-0 h-full w-1/2 bg-purple-500 cursor-pointer transition-all duration-500
+    ${active === 0 ? "rounded-r-[70px]" : "rounded-l-[70px]"}
+  `}
+  style={{ left: active === 0 ? "0" : "25vw", zIndex: 20 }}
+>
+
           {active === 0 ? (
             <div className="flex flex-col items-center justify-center  h-full gap-3">
               <span className="text-white text-4xl">Hello,Welcome</span>
