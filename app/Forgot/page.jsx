@@ -89,7 +89,7 @@ const Page = () => {
           <input
             className="w-full bg-white/20 text-white placeholder-gray-300 px-10 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-400 pr-10"
             placeholder="New password"
-            type={showPassword ? "text" : "email"}
+            type={showPassword ? "text" : "password"}
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
           />
