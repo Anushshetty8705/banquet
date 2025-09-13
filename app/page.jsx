@@ -1,8 +1,8 @@
 "use client";
-import Main from "./Login/Main";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
-
+import Scrol from "./scroll/Scrol";
+import Scrol2 from "./scroll/Scrol2";
 export default function Home() {
   const images = [
     "https://picsum.photos/id/1015/1200/800",
@@ -80,17 +80,16 @@ const [Visible, setVisible] = useState(false);
           <h1 className="text-6xl md:text-8xl font-bold">GRAND</h1>
           <h1 className="text-6xl md:text-8xl font-bold">PEARL.</h1>
 
-            <button onClick={() =>setVisible(true)} className="mt-4 text-2xl bg-neutral-600 rounded-3xl px-10 py-5 hover:bg-neutral-700 transition">
+            <Link href={"/login"}><button  className="mt-4 text-2xl bg-neutral-600 rounded-3xl px-10 py-5 hover:bg-neutral-700 transition">
               BOOK NOW
-            </button>
+            </button></Link>
          
         </div>
       </div>
-     {Visible && <div className="absolute inset-0 flex items-center justify-center h-screen">
-  <Main  Visible={Visible} setVisible={setVisible}/></div>} 
-
-
-
+     
+  <div><Scrol/></div>
+  <div><Scrol2/></div>
     </>
+    
   );
 }

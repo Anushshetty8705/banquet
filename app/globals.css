@@ -18,5 +18,5 @@ li:hover {
     opacity: 0.8;
 }
 .box{
-  box-shadow: 1px 5px 100px 5px purple;
+  box-shadow: 1px 5px 100px 5px transparent;
 }
