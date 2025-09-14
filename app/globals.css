@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
 @import "tailwindcss";
-li {color: white;
+li{color: white;
 
   opacity: 0.8;
   transition: transform 0.3s ease-in-out; /* Apply transition to the transform property */
 }
 
-li:hover {
+.hi:hover {
   color: rgb(120, 176, 244);
   opacity: 0.9;
 

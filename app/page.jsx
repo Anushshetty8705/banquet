@@ -68,10 +68,10 @@ const [Visible, setVisible] = useState(false);
         <nav className={ Visible ? "absolute top-5 left-1/2 transform -translate-x-1/2 w-5/6 flex justify-between items-center text-white z-10 pointer-events-none blur-[1px]" :"absolute top-5 left-1/2 transform -translate-x-1/2 w-5/6 flex justify-between items-center text-white z-10" } >
           <div className="text-2xl font-bold text-black">ICON</div>
           <ul className="flex gap-8 text-xl">
-            <li><Link href="/homepage" className="hover:underline">HOME</Link></li>
-            <li><Link href="/gallarypage" className="hover:underline">GALLERY</Link></li>
-            <li><Link href="/contactpage" className="hover:underline">CONTACT US</Link></li>
-            <li><Link href="/aboutpage" className="hover:underline">ABOUT US</Link></li>
+            <li><Link href="/homepage" className="hover:underline hi">HOME</Link></li>
+            <li><Link href="/gallarypage" className="hover:underline hi">GALLERY</Link></li>
+            <li><Link href="/contactpage" className="hover:underline hi">CONTACT US</Link></li>
+            <li><Link href="/aboutpage" className="hover:underline hi">ABOUT US</Link></li>
           </ul>
         </nav>
 
