@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @import "tailwindcss";
-li{color: white;
+.hi{color: white;
 
   opacity: 0.8;
   transition: transform 0.3s ease-in-out; /* Apply transition to the transform property */
@@ -11,7 +11,7 @@ li{color: white;
   color: rgb(120, 176, 244);
   opacity: 0.9;
 
-  transform: scale(1.3);           /* Scale up uniformly */
+  transform:  scale(1.5);           /* Scale up uniformly */
 }
 .bg-neutral-600 {
     background-color: var(--color-neutral-600) /* oklch(43.9% 0 0) = #525252 */;

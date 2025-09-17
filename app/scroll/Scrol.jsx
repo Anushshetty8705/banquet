@@ -74,12 +74,12 @@ export default function Scrol() {
           ▶
         </button>
 
-        <div ref={containerRef} className="w-full h-[30vh] overflow-hidden">
-          <div className="flex items-center h-full transition-transform duration-500" style={{ transform: `translateX(${translateX})` }}>
+        <div ref={containerRef} className=" overflow-hidden">
+          <div className="flex items-center h-full transition-transform " >
             {images.map((src, i) => (
-              <div key={i} className="flex-shrink-0 mr-3" style={{ width: "20vw", height: "30vh" }}>
-                <img src={src} alt={`pic-${i}`} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 8 }} draggable={false} />
-              </div>
+             
+                <img src={src} alt={`pic-${i}`} className="hi w-50 h-50 object-cover rounded-lg hover:object-contain hover:w-[40vw] hover:h-[60vh] hover:z-10" draggable={false} />
+             
             ))}
           </div>
         </div>

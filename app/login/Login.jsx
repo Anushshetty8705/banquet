@@ -4,6 +4,8 @@ import { useSession, signIn, signOut } from "next-auth/react";
 import { Eye, EyeOff, User } from "lucide-react";
 import { FaFacebookF, FaGoogle, FaGithub } from "react-icons/fa";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+
 
 const Login = () => {
   const { data: session, status } = useSession();
@@ -26,22 +28,12 @@ const Login = () => {
     if (e.target.value.length < 8) setlogpasserror("Password must be at least 8 chars");
     else setlogpasserror("");
   };
-
+const router = useRouter();
   if (status === "loading") return null;
-
-  if (status === "authenticated") {
-    return (
-      <div className="h-full w-full flex flex-col items-center justify-center text-white">
-        <p className="mb-4">Welcome, {session.user?.email}</p>
-        <button
-          onClick={() => signOut()}
-          className="bg-red-500 px-4 py-2 rounded-xl hover:opacity-90"
-        >
-          Logout
-        </button>
-      </div>
-    );
-  }
+if (status === "authenticated") {
+  // router.push("/dashboard");
+  return null;
+}
 
   return (
     <div className="h-full w-1/2 flex flex-col items-center justify-center">
@@ -75,7 +67,9 @@ const Login = () => {
         >
           {ShowPasword ? <EyeOff size={18} /> : <Eye size={18} />}
         </button>
-        <div className="text-red-600">{logpasserror}</div>
+        <div>
+           <p className="text-red-400 text-xs mt-1">{logpasserror}</p>
+        </div>
       </div>
 
       <Link href="/Forgot" className="text-gray-300 hover:text-white mb-4">
@@ -91,23 +85,18 @@ const Login = () => {
       <div className="text-white/80 my-4">or continue with</div>
 
       <div className="flex gap-3">
-        {!session ? (
+        {!session && 
           <>
             <div className=" flex items-center justify-center">
+            
             <button onClick={() => signIn("github")}>  <FaGithub className="hi bg-gray-200/10 p-2 rounded-full text-white/80 hover:bg-gray-800" size={24} /></button>
             <button onClick={() => signIn("google")}>  <FaGoogle className="hi bg-gray-200/10 p-2 rounded-full text-white/80 hover:bg-gray-800" size={24} /></button>
             <button onClick={() => signIn("facebook")}>  <FaFacebookF className="hi bg-gray-200/10 p-2 rounded-full text-white/80 hover:bg-gray-800" size={24} /></button>
 
           </div>
             </>
-        ) : (
-          <div className="h-20 w-20 flex items-center justify-center flex-col">
-            <button onClick={() => signOut()}>
-              <User size={18} />
-            </button>
-            <div>{session.user?.email}</div>
-          </div>
-        )}
+         
+        }
       </div>
     </div>
   );
