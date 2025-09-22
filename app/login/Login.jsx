@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
-import { Eye, EyeOff, User } from "lucide-react";
+import { Eye, EyeOff, User,Lock } from "lucide-react";
 import { FaFacebookF, FaGoogle, FaGithub } from "react-icons/fa";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -37,38 +37,44 @@ if (status === "authenticated") {
 
   return (
     <div className="h-full w-1/2 flex flex-col items-center justify-center">
-      <div className="text-white text-4xl font-semibold mb-4">LOGIN</div>
+      <div className="text-white text-3xl font-semibold mb-4">LOGIN</div>
 
       {/* Email */}
       <div className="w-[80%] mb-4 relative">
+           <p className="text-white mr-40 text-sm pb-1">Enter your Email</p>
         <input
           value={loginEmail}
           onChange={valloginEmail}
           type="email"
           placeholder="Email"
-          className="bg-white/20 w-full py-2 rounded-xl px-10 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-red-400"
+          className="bg-white/20  text-white w-full py-3 rounded-xl px-10 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-red-400"
         />
-        <div className="text-red-600">{logemailerror}</div>
+                  <User className="absolute left-3 top-8 text-gray-300" size={14} />
+        
+        <div className="text-red-400">{logemailerror}</div>
       </div>
 
       {/* Password */}
       <div className="w-[80%] mb-4 relative">
+           <p className="text-white mr-40 text-sm pb-1">Enter your Password</p>
         <input
           value={loginPassword}
           onChange={valloginPassword}
           type={ShowPasword ? "text" : "password"}
           placeholder="Password"
-          className="bg-white/20 w-full py-2 rounded-xl px-10 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-red-400"
+          className="bg-white/20 w-full py-3 text-white rounded-xl px-11 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-red-400"
         />
+           <Lock className="absolute left-3 top-8 text-gray-300" size={14} />
+        
         <button
           type="button"
           onClick={() => setShowPasword(!ShowPasword)}
-          className="absolute right-3 top-2 text-gray-300"
+          className="absolute right-3 top-8 text-gray-300"
         >
-          {ShowPasword ? <EyeOff size={18} /> : <Eye size={18} />}
+          {ShowPasword ? <EyeOff size={17} /> : <Eye size={17} />}
         </button>
         <div>
-           <p className="text-red-400 text-xs mt-1">{logpasserror}</p>
+           <p className="text-red-400 mt-1">{logpasserror}</p>
         </div>
       </div>
 
@@ -84,10 +90,10 @@ if (status === "authenticated") {
 
       <div className="text-white/80 my-4">or continue with</div>
 
-      <div className="flex gap-3">
+      <div >
         {!session && 
           <>
-            <div className=" flex items-center justify-center">
+            <div className=" flex items-center justify-center gap-5">
             
             <button onClick={() => signIn("github")}>  <FaGithub className="hi bg-gray-200/10 p-2 rounded-full text-white/80 hover:bg-gray-800" size={24} /></button>
             <button onClick={() => signIn("google")}>  <FaGoogle className="hi bg-gray-200/10 p-2 rounded-full text-white/80 hover:bg-gray-800" size={24} /></button>

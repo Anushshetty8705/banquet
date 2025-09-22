@@ -1,10 +1,11 @@
 "use client";
-import { Eye, EyeOff, User, Lock, Link } from "lucide-react"; // added User + Lock icons
+import { Eye, EyeOff, Hash, KeyRound, Mail, User } from "lucide-react"; // added User + Lock icons
 import { FaFacebookF, FaGoogle, FaGithub } from "react-icons/fa";
 import React, { useState } from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { AfterContext } from "next/dist/server/after/after-context";
+import { toast, Flip } from "react-toastify";
+
 
 const Register = () => {
   const { data: session, status } = useSession();
@@ -15,14 +16,17 @@ const Register = () => {
   const [regemailerror, setregemailerror] = useState("");
   const [regpasserror, setregpasserror] = useState("");
   const [otp, setotp] = useState("");
-  const [visotp, setvisotp] = useState(true);
+  const [visotp, setvisotp] = useState(false);
   const [verified, setverified] = useState(true);
-  const [isvalid, setisvalid] = useState(true);
+  const [isvalid, setisvalid] = useState(false);
   const [otpvalid, setotpvalid] = useState(false);
-
+const [ShowPasword, setShowPasword] = useState(false);
   const [isuservalid, setisuservalid] = useState(false);
   const [ispassvalid, setispassvalid] = useState(false);
   const [validotp, setvalidotp] = useState(false)
+const [verifiedEmail, setVerifiedEmail] = useState(""); // stores verified email
+
+
 
   const valregisterusername = (e) => {
     setregisterusername(e.target.value);
@@ -39,6 +43,7 @@ const Register = () => {
   };
 
   const valregisteremail = (e) => {
+
     setregisteremail(e.target.value);
     if (e.target.value.length < 8) {
       setisvalid(false);
@@ -81,23 +86,44 @@ const Register = () => {
     }
   };
   //  otpsending
-  const sendOtp = async () => {
-    
-    if (registeremail.length > 8 && registeremail.endsWith("@gmail.com")) {
+ const sendOtp = async () => {
+  if (registeremail.length > 8 && registeremail.endsWith("@gmail.com")) {
+    try {
+      setVerifiedEmail(registeremail); // only this email is marked verified
+
       const res = await fetch("/api/send-otp", {
         method: "POST",
-        headers: { "Content-Type": "application/json" }, // 👈 fix
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: registeremail }),
       });
-    }
 
-    // if (res.ok) {
-    //   alert("OTP sent to your email ✅");
-    //   setvisotp(true)
-    // } else {
-    //   alert("Failed to send OTP ❌");
-    // }
-  };
+      if (res.ok) {
+        toast.success("OTP sent successfully 📧", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "dark",
+          transition: Flip,
+        });
+        setvisotp(true);
+      } else {
+        toast.error("Failed to send OTP ❌", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "dark",
+          transition: Flip,
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Something went wrong ❌", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "dark",
+        transition: Flip,
+      });
+    }
+  }
+};
 
   // verify otp
   const verifyOtp = async () => {
@@ -113,10 +139,9 @@ const Register = () => {
       {
         setvisotp(false);
       }
+    
       alert(data.message);
-      if (data.sucess === true) {
-        setverified(true);
-      }
+   
     }
 
     // will show "OTP verified ✅" or "Invalid OTP ❌"
@@ -145,16 +170,21 @@ const Register = () => {
       setregpasserror("* This field is required");
     }
     if (verified === false) {
-      // setisvalid(false)
+      setisvalid(false)
 
       alert("verify email");
     }
+    if (registeremail !== verifiedEmail) {
+  toast.error("Please verify your current email before registering ❌");
+  return; // stop registration
+}
+
     if (
       registeremail.length > 8 &&
       registerusername.length > 8 &&
       registerpassword.length > 8 &&
       registeremail.endsWith("@gmail.com") &&
-      verified
+      verifiedEmail === registeremail
     ) {
       console.log("good ");
     }
@@ -191,8 +221,6 @@ const Register = () => {
                   value={otp}
                   type="tel"
                   placeholder=" OTP"
-                  autoComplete="one-time-code"
-                  inputMode="numeric"
                   onChange={(e) => valotp(e)}
                    className={`bg-white/20 text-white relative w-[80%]  placeholder-gray-300 rounded-xl px-10 focus:outline-none focus:ring-2 ${!validotp ? " focus:ring-red-400" : " focus:ring-green-400"}` }
                 
@@ -229,7 +257,7 @@ const Register = () => {
             )}
           </div>
 
-          <User className="absolute left-3 top-8 text-gray-300" size={14} />
+          <Hash className="absolute left-3 top-8 text-gray-300" size={14} />
 
           <div className="text-red-400 ">{regemailerror}</div>
         </div>
@@ -238,14 +266,21 @@ const Register = () => {
 
           <input
             value={registerpassword}
-            type="password"
+            type={ShowPasword ? "text" : "password"}
             placeholder="Password"
             onChange={(e) => valregisterpassword(e)}
             className={`bg-white/20 w-[100%] py-3 relative text-white placeholder-gray-300  rounded-xl px-10 focus:outline-none focus:ring-2 ${
               !ispassvalid ? "focus:ring-red-400" : "focus:ring-green-400"
             } `}
           />
-          <Lock className="absolute left-3 top-8 text-gray-300" size={14} />
+            <button
+                    type="button"
+                    onClick={() => setShowPasword(!ShowPasword)}
+                    className="absolute right-3 top-8 text-gray-300"
+                  >
+                    {ShowPasword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+          <KeyRound className="absolute left-3 top-8 text-gray-300" size={14} />
 
           <div className="text-red-400 ">{regpasserror}</div>
         </div>
