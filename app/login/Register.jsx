@@ -4,6 +4,7 @@ import { FaFacebookF, FaGoogle, FaGithub } from "react-icons/fa";
 import React, { useState } from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { AfterContext } from "next/dist/server/after/after-context";
 
 const Register = () => {
   const { data: session, status } = useSession();
@@ -14,162 +15,262 @@ const Register = () => {
   const [regemailerror, setregemailerror] = useState("");
   const [regpasserror, setregpasserror] = useState("");
   const [otp, setotp] = useState("");
-  const [visotp, setvisotp] = useState(false);
+  const [visotp, setvisotp] = useState(true);
+  const [verified, setverified] = useState(true);
+  const [isvalid, setisvalid] = useState(true);
+  const [otpvalid, setotpvalid] = useState(false);
+
+  const [isuservalid, setisuservalid] = useState(false);
+  const [ispassvalid, setispassvalid] = useState(false);
+  const [validotp, setvalidotp] = useState(false)
 
   const valregisterusername = (e) => {
     setregisterusername(e.target.value);
-    if (e.target.value.length < 5) setregusererror("username must be 5 char");
-    else setregusererror("");
+    if (e.target.value.length < 5) {
+      setregusererror("username must be 5 char");
+      setisvalid(false);
+      setisuservalid(false);
+    } else {
+      setisuservalid(true);
+      setisvalid(true);
+
+      setregusererror("");
+    }
   };
 
   const valregisteremail = (e) => {
     setregisteremail(e.target.value);
-    if (e.target.value.length < 8) setregemailerror("email must be 8 char");
-    else if (!e.target.value.endsWith("@gmail.com"))
+    if (e.target.value.length < 8) {
+      setisvalid(false);
+      setotpvalid(false);
+      setregemailerror("email must be 8 char");
+
+    } else if (!e.target.value.endsWith("@gmail.com")) {
+      setisvalid(false);
+      setotpvalid(false);
+   
       setregemailerror("Invalid email (must end with @gmail.com)");
-    else setregemailerror("");
+    } 
+    else {
+      setisvalid(true);
+      setregemailerror("");
+      setotpvalid(true);
+
+    }
   };
 
   const valregisterpassword = (e) => {
     setregisterpassword(e.target.value);
-    if (e.target.value.length < 8) setregpasserror("password must be 8 char");
-    else setregpasserror("");
+    if (e.target.value.length < 8) {
+      setregpasserror("password must be 8 char");
+      setisvalid(false);
+      setispassvalid(false);
+    } else {
+      setregpasserror("");
+      setisvalid(true);
+      setispassvalid(true);
+    }
   };
   const valotp = (e) => {
-    
     setotp(e.target.value);
-  }   
+    if(e.target.value.length ===6 ){
+       setvalidotp(true)
+    }
+    else{
+       setvalidotp(false)
+    }
+  };
   //  otpsending
   const sendOtp = async () => {
-    const res = await fetch("/api/send-otp", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" }, // 👈 fix
-      body: JSON.stringify({ email: registeremail }),
-    });
-
-    if (res.ok) {
-      alert("OTP sent to your email ✅");
-      setvisotp(true)
-    } else {
-      alert("Failed to send OTP ❌");
+    
+    if (registeremail.length > 8 && registeremail.endsWith("@gmail.com")) {
+      const res = await fetch("/api/send-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" }, // 👈 fix
+        body: JSON.stringify({ email: registeremail }),
+      });
     }
+
+    // if (res.ok) {
+    //   alert("OTP sent to your email ✅");
+    //   setvisotp(true)
+    // } else {
+    //   alert("Failed to send OTP ❌");
+    // }
   };
 
   // verify otp
   const verifyOtp = async () => {
-    console.log("verifying otp", otp);
-    const res = await fetch("/api/verify-otp", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" }, // 👈 fix
-      body: JSON.stringify({ email: registeremail, otp }),
-    });
+    if (otp.length === 6) {
+     
+      const res = await fetch("/api/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" }, // 👈 fix
+        body: JSON.stringify({ email: registeremail, otp }),
+      });
+   
+      const data = await res.json();
+      {
+        setvisotp(false);
+      }
+      alert(data.message);
+      if (data.sucess === true) {
+        setverified(true);
+      }
+    }
 
-    const data = await res.json();
-    {setvisotp(false)}
-    alert(data.message); // will show "OTP verified ✅" or "Invalid OTP ❌"
+    // will show "OTP verified ✅" or "Invalid OTP ❌"
   };
   const router = useRouter();
   if (status === "loading") return null;
   if (status === "authenticated") {
-     signOut("facebook")
+    signOut("facebook");
     // router.push("/dashboard");
 
     return null;
   }
 
+  const registerconfirm = () => {
+    if (registeremail.length === 0) {
+      setregemailerror("* This field is required");
+      setisvalid(false);
+    }
+
+    if (registerusername.length == 0) {
+      setisvalid(false);
+      setregusererror("* This field is required");
+    }
+    if (registerpassword.length == 0) {
+      setisvalid(false);
+      setregpasserror("* This field is required");
+    }
+    if (verified === false) {
+      // setisvalid(false)
+
+      alert("verify email");
+    }
+    if (
+      registeremail.length > 8 &&
+      registerusername.length > 8 &&
+      registerpassword.length > 8 &&
+      registeremail.endsWith("@gmail.com") &&
+      verified
+    ) {
+      console.log("good ");
+    }
+  };
+
   return (
     <>
       <div className="h-full w-1/2 flex flex-col items-center justify-center relative  gap-2 ">
         <div className="text-white text-3xl font-semibold mb-6 ">REGISTER</div>
+
         <div className="w-[80%] mb-4 relative">
+          <p className="text-white mr-40 text-sm pb-1">Enter your Name</p>
           <input
             type="text"
             placeholder=" Name"
             value={registerusername}
             onChange={(e) => valregisterusername(e)}
-            className="bg-white/20 w-[100%] py-2 relative placeholder-gray-300  rounded-xl px-10 focus:outline-none focus:ring-2 focus:ring-red-400"
+            className={`bg-white/20 w-[100%] py-3 relative text-white placeholder-gray-300  rounded-xl px-10 focus:outline-none focus:ring-2 ${
+              isuservalid ? "focus:ring-red-400" : "focus:ring-green-400"
+            } `}
           />
-          <User className="absolute left-3 top-2 text-gray-300" size={16} />
+          <User className="absolute left-3 top-8 text-gray-300" size={14} />
           <div className="text-red-400 ">{regusererror}</div>
         </div>
         <div className="w-[80%] mb-4 relative">
+          <p className="text-white mr-40 text-sm pb-1">
+            Enter your {visotp ? "OTP" : "Email"}
+          </p>
+
           <div className="relative flex gap-2">
             {visotp ? (
               <>
-               <input
-                value={otp}
-                type="tel"
-                placeholder=" OTP"
-                onChange={(e) => valotp(e)}
-                className="bg-white/20  relative w-[80%] py-2 placeholder-gray-300 rounded-xl px-10 focus:outline-none focus:ring-2 focus:ring-red-400"
-              />
-              
-           
-              <button
-              onClick={verifyOtp}
-              className="  px-3 py-2 rounded-xl text-white text-[12px] bg-gradient-to-r from-red-400 to-pink-500 hover:opacity-90"
-            >
-              Verify
-            </button>
-            </>
+                <input
+                  value={otp}
+                  type="tel"
+                  placeholder=" OTP"
+                  autoComplete="one-time-code"
+                  inputMode="numeric"
+                  onChange={(e) => valotp(e)}
+                   className={`bg-white/20 text-white relative w-[80%]  placeholder-gray-300 rounded-xl px-10 focus:outline-none focus:ring-2 ${!validotp ? " focus:ring-red-400" : " focus:ring-green-400"}` }
+                
+                />
+
+                <button
+                  onClick={verifyOtp}
+                  className={`px-3 py-2 rounded-xl text-white text-[12px] ${validotp ? "bg-gradient-to-r from-red-400 to-pink-500 hover:opacity-90"
+              : "bg-gray-600 cursor-not-allowed"} `}
+                >
+                  Verify
+                </button>
+              </>
             ) : (
               <>
-         <input
-                value={registeremail}
-                type="email"
-                placeholder=" Email"
-                onChange={(e) => valregisteremail(e)}
-                className="bg-white/20  relative w-[80%] py-2 placeholder-gray-300 rounded-xl px-10 focus:outline-none focus:ring-2 focus:ring-red-400"
-              />
-                 <button
-              onClick={sendOtp}
-              className="  px-3 py-2 rounded-xl text-white text-[12px] bg-gradient-to-r from-red-400 to-pink-500 hover:opacity-90"
-            >
-              Send
-            </button>
-             
-                  </>
+                <input
+                  value={registeremail}
+                  type="email"
+                  placeholder=" Email"
+                  onChange={(e) => valregisteremail(e)}
+                   className={`  bg-white/20  text-white relative w-[80%]  placeholder-gray-300 rounded-xl px-10 focus:outline-none focus:ring-2  ${!otpvalid ? "focus:ring-red-400" : "focus:ring-green-400"}   `}
+                />
+                <button
+                  onClick={sendOtp}
+                  className={` px-3 py-2 rounded-xl text-white text-[12px] ${
+                    otpvalid
+                      ? "bg-gradient-to-r from-red-400 to-pink-500 hover:opacity-90"
+                      : "bg-gray-600 cursor-not-allowed"
+                  }`}
+                >
+                  Send
+                </button>
+              </>
             )}
-
-           
           </div>
 
-          <User className="absolute left-3 top-2 text-gray-300" size={16} />
+          <User className="absolute left-3 top-8 text-gray-300" size={14} />
 
           <div className="text-red-400 ">{regemailerror}</div>
         </div>
         <div className="w-[80%] mb-4 relative">
+          <p className="text-white text-sm pb-1">Enter your password</p>
+
           <input
             value={registerpassword}
             type="password"
             placeholder="Password"
             onChange={(e) => valregisterpassword(e)}
-            className=" relative bg-white/20 w-[100%] py-2 rounded-xl placeholder-gray-300 px-10 focus:outline-none focus:ring-2 focus:ring-red-400"
+            className={`bg-white/20 w-[100%] py-3 relative text-white placeholder-gray-300  rounded-xl px-10 focus:outline-none focus:ring-2 ${
+              !ispassvalid ? "focus:ring-red-400" : "focus:ring-green-400"
+            } `}
           />
-          <Lock className="absolute left-3 top-2 text-gray-300" size={18} />
+          <Lock className="absolute left-3 top-8 text-gray-300" size={14} />
 
           <div className="text-red-400 ">{regpasserror}</div>
         </div>
         <button
-          onClick={() => setVisible(false)}
-          className="bg-gradient-to-r from-red-400 to-pink-500 hover:opacity-90 w-[60%] py-2.5 text-white rounded-2xl text-xl"
+          onClick={() => registerconfirm()}
+          className={` w-[60%] py-2.5 text-white rounded-2xl text-xl ${
+            isvalid
+              ? "bg-gradient-to-r from-red-400 to-pink-500 hover:opacity-90"
+              : "bg-gray-600 cursor-not-allowed"
+          }`}
         >
           Register
         </button>
-        <div className="text-white/80">or continue with</div>
-        <div className="flex gap-3">
+        <div className="text-white/80 mb-5">or continue with</div>
+        <div>
           {!session && (
             <>
-              <div className=" flex items-center justify-center">
+              <div className=" flex items-center justify-center gap-5">
                 <button onClick={() => signIn("github")}>
-                  
                   <FaGithub
                     className="hi bg-gray-200/10 p-2 rounded-full text-white/80 hover:bg-gray-800"
                     size={24}
                   />
                 </button>
                 <button onClick={() => signIn("google")}>
-                
                   <FaGoogle
                     className="hi bg-gray-200/10 p-2 rounded-full text-white/80 hover:bg-gray-800"
                     size={24}
