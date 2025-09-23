@@ -1,33 +1,30 @@
 "use client";
 import { Eye, EyeOff, Hash, KeyRound, Mail, User } from "lucide-react"; // added User + Lock icons
-import { FaFacebookF, FaGoogle, FaGithub } from "react-icons/fa";
+import { FaFacebookF, FaGoogle, FaGithub } from "react-icons/fa"; // SOCIAL PLATFORM FOR REGISTER
 import React, { useState } from "react";
-import { useSession, signIn, signOut } from "next-auth/react";
+import { useSession, signIn, signOut } from "next-auth/react"; //SIGIN SIGOUT LOGIN
 import { useRouter } from "next/navigation";
-import { toast, Flip } from "react-toastify";
-
+import { toast, Flip } from "react-toastify"; //TOAST
 
 const Register = () => {
-  const { data: session, status } = useSession();
-  const [registerusername, setregisterusername] = useState("");
-  const [registeremail, setregisteremail] = useState("");
-  const [registerpassword, setregisterpassword] = useState("");
-  const [regusererror, setregusererror] = useState("");
-  const [regemailerror, setregemailerror] = useState("");
-  const [regpasserror, setregpasserror] = useState("");
-  const [otp, setotp] = useState("");
-  const [visotp, setvisotp] = useState(false);
-  const [verified, setverified] = useState(true);
-  const [isvalid, setisvalid] = useState(false);
-  const [otpvalid, setotpvalid] = useState(false);
-const [ShowPasword, setShowPasword] = useState(false);
-  const [isuservalid, setisuservalid] = useState(false);
-  const [ispassvalid, setispassvalid] = useState(false);
-  const [validotp, setvalidotp] = useState(false)
-const [verifiedEmail, setVerifiedEmail] = useState(""); // stores verified email
+  const { data: session, status } = useSession(); //DATA FROM SOCIAL PLATFORM
+  const [registerusername, setregisterusername] = useState(""); // FOR USER
+  const [registeremail, setregisteremail] = useState(""); //FOR EMAIL
+  const [registerpassword, setregisterpassword] = useState(""); //FOR PASSWORD
+  const [regusererror, setregusererror] = useState(""); //FOR USER ERROR
+  const [regemailerror, setregemailerror] = useState(""); //FOR EMAIL ERROR
+  const [regpasserror, setregpasserror] = useState(""); //FOR PASSWORD ERROR
+  const [otp, setotp] = useState(""); //FOR OTP
+  const [visotp, setvisotp] = useState(false); //TO SHOW THE OTP INPUT BOX
+  const [isvalid, setisvalid] = useState(false); // TO  ALTER REGISTER BUTTON ACC TO CONDITON
+  const [EMAILVALID, setEMAILVALID] = useState(false); // TO CHECK FOR SEND AND EMAIL INPUT BOX
+  const [ShowPasword, setShowPasword] = useState(false); //showing password
+  const [isuservalid, setisuservalid] = useState(false); // valid user
+  const [ispassvalid, setispassvalid] = useState(false); // valid password
+  const [validotp, setvalidotp] = useState(false); //check for valiD TO INPUT AND BUTTON
+  const [verifiedEmail, setVerifiedEmail] = useState(""); // stores verified email
 
-
-
+  // SETTING VALUE OF USER AND ERROR
   const valregisterusername = (e) => {
     setregisterusername(e.target.value);
     if (e.target.value.length < 5) {
@@ -42,28 +39,26 @@ const [verifiedEmail, setVerifiedEmail] = useState(""); // stores verified email
     }
   };
 
+  // SETTING VALUE AND ERROR CHECK FOR EMAIL
   const valregisteremail = (e) => {
-
     setregisteremail(e.target.value);
     if (e.target.value.length < 8) {
       setisvalid(false);
-      setotpvalid(false);
+      setEMAILVALID(false);
       setregemailerror("email must be 8 char");
-
     } else if (!e.target.value.endsWith("@gmail.com")) {
       setisvalid(false);
-      setotpvalid(false);
-   
+      setEMAILVALID(false);
+
       setregemailerror("Invalid email (must end with @gmail.com)");
-    } 
-    else {
+    } else {
       setisvalid(true);
       setregemailerror("");
-      setotpvalid(true);
-
+      setEMAILVALID(true);
     }
   };
 
+  // SETTING VALUE AND ERROR CHECK FOR PASSWORD
   const valregisterpassword = (e) => {
     setregisterpassword(e.target.value);
     if (e.target.value.length < 8) {
@@ -76,21 +71,22 @@ const [verifiedEmail, setVerifiedEmail] = useState(""); // stores verified email
       setispassvalid(true);
     }
   };
+
+  // SETTING VALUE AND ERROR CHECK FOR OTP
   const valotp = (e) => {
     setotp(e.target.value);
-    if(e.target.value.length ===6 ){
-       setvalidotp(true)
-    }
-    else{
-       setvalidotp(false)
+    if (e.target.value.length === 6) {
+      setvalidotp(true);
+    } else {
+      setvalidotp(false);
     }
   };
+
   //  otpsending
- const sendOtp = async () => {
+ // send otp (✅ no verifiedEmail here)
+const sendOtp = async () => {
   if (registeremail.length > 8 && registeremail.endsWith("@gmail.com")) {
     try {
-      setVerifiedEmail(registeremail); // only this email is marked verified
-
       const res = await fetch("/api/send-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -114,7 +110,6 @@ const [verifiedEmail, setVerifiedEmail] = useState(""); // stores verified email
         });
       }
     } catch (err) {
-      console.error(err);
       toast.error("Something went wrong ❌", {
         position: "top-right",
         autoClose: 3000,
@@ -125,36 +120,58 @@ const [verifiedEmail, setVerifiedEmail] = useState(""); // stores verified email
   }
 };
 
-  // verify otp
-  const verifyOtp = async () => {
-    if (otp.length === 6) {
-     
+// verify otp (✅ only set verifiedEmail if correct)
+const verifyOtp = async () => {
+  if (otp.length === 6) {
+    try {
       const res = await fetch("/api/verify-otp", {
         method: "POST",
-        headers: { "Content-Type": "application/json" }, // 👈 fix
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: registeremail, otp }),
       });
-   
-      const data = await res.json();
-      {
-        setvisotp(false);
-      }
-    
-      alert(data.message);
-   
-    }
 
-    // will show "OTP verified ✅" or "Invalid OTP ❌"
-  };
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        toast.success("OTP verified ✅", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "dark",
+          transition: Flip,
+        });
+        setvisotp(false);
+        setVerifiedEmail(registeremail); // ✅ now only after correct OTP
+      } else {
+         setvisotp(false);
+        toast.error(data.message || "Invalid OTP ❌", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "dark",
+          transition: Flip,
+        });
+      }
+    } catch (err) {
+      toast.error("Server error ❌", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "dark",
+        transition: Flip,
+      });
+    }
+  }
+};
+
+  // CONTINUE WITH SOCIAL PALTFORM
   const router = useRouter();
   if (status === "loading") return null;
   if (status === "authenticated") {
-    signOut("facebook");
     // router.push("/dashboard");
-
+   signOut("facebook");
+   signOut("google");
     return null;
   }
 
+  // SETTING FOR REGISTRION
   const registerconfirm = () => {
     if (registeremail.length === 0) {
       setregemailerror("* This field is required");
@@ -169,15 +186,10 @@ const [verifiedEmail, setVerifiedEmail] = useState(""); // stores verified email
       setisvalid(false);
       setregpasserror("* This field is required");
     }
-    if (verified === false) {
-      setisvalid(false)
-
-      alert("verify email");
-    }
     if (registeremail !== verifiedEmail) {
-  toast.error("Please verify your current email before registering ❌");
-  return; // stop registration
-}
+      toast.error("Please verify your current email before registering ❌");
+      return; // stop registration
+    }
 
     if (
       registeremail.length > 8 &&
@@ -186,7 +198,11 @@ const [verifiedEmail, setVerifiedEmail] = useState(""); // stores verified email
       registeremail.endsWith("@gmail.com") &&
       verifiedEmail === registeremail
     ) {
-      console.log("good ");
+      try {
+        toast.success("Registration sucessfull");
+      } catch {
+        toast.error("something went Wrong");
+      }
     }
   };
 
@@ -194,7 +210,7 @@ const [verifiedEmail, setVerifiedEmail] = useState(""); // stores verified email
     <>
       <div className="h-full w-1/2 flex flex-col items-center justify-center relative  gap-2 ">
         <div className="text-white text-3xl font-semibold mb-6 ">REGISTER</div>
-
+        {/* USERNAME */}
         <div className="w-[80%] mb-4 relative">
           <p className="text-white mr-40 text-sm pb-1">Enter your Name</p>
           <input
@@ -203,10 +219,12 @@ const [verifiedEmail, setVerifiedEmail] = useState(""); // stores verified email
             value={registerusername}
             onChange={(e) => valregisterusername(e)}
             className={`bg-white/20 w-[100%] py-3 relative text-white placeholder-gray-300  rounded-xl px-10 focus:outline-none focus:ring-2 ${
-              isuservalid ? "focus:ring-red-400" : "focus:ring-green-400"
+              !isuservalid ? "focus:ring-red-400" : "focus:ring-green-400"
             } `}
           />
+          {/* USER ICON */}
           <User className="absolute left-3 top-8 text-gray-300" size={14} />
+          {/* USER ERROR */}
           <div className="text-red-400 ">{regusererror}</div>
         </div>
         <div className="w-[80%] mb-4 relative">
@@ -215,38 +233,47 @@ const [verifiedEmail, setVerifiedEmail] = useState(""); // stores verified email
           </p>
 
           <div className="relative flex gap-2">
-            {visotp ? (
+            {visotp ? ( //CHECKING WHEATHER THE TO SHOW EMAIL OR OTP
               <>
+                {/* OTP */}
                 <input
                   value={otp}
                   type="tel"
                   placeholder=" OTP"
                   onChange={(e) => valotp(e)}
-                   className={`bg-white/20 text-white relative w-[80%]  placeholder-gray-300 rounded-xl px-10 focus:outline-none focus:ring-2 ${!validotp ? " focus:ring-red-400" : " focus:ring-green-400"}` }
-                
+                  className={`bg-white/20 text-white relative w-[80%]  placeholder-gray-300 rounded-xl px-10 focus:outline-none focus:ring-2 ${
+                    !validotp ? " focus:ring-red-400" : " focus:ring-green-400"
+                  }`}
                 />
-
+                {/* VERIFY */}
                 <button
                   onClick={verifyOtp}
-                  className={`px-3 py-2 rounded-xl text-white text-[12px] ${validotp ? "bg-gradient-to-r from-red-400 to-pink-500 hover:opacity-90"
-              : "bg-gray-600 cursor-not-allowed"} `}
+                  className={`px-3 py-2 rounded-xl text-white text-[12px] ${
+                    validotp
+                      ? "bg-gradient-to-r from-red-400 to-pink-500 hover:opacity-90"
+                      : "bg-gray-600 cursor-not-allowed"
+                  } `}
                 >
                   Verify
                 </button>
               </>
             ) : (
               <>
+                {/* EMAIL */}
                 <input
                   value={registeremail}
                   type="email"
                   placeholder=" Email"
                   onChange={(e) => valregisteremail(e)}
-                   className={`  bg-white/20  text-white relative w-[80%]  placeholder-gray-300 rounded-xl px-10 focus:outline-none focus:ring-2  ${!otpvalid ? "focus:ring-red-400" : "focus:ring-green-400"}   `}
+                  className={`  bg-white/20  text-white relative w-[80%]  placeholder-gray-300 rounded-xl px-10 focus:outline-none focus:ring-2  ${
+                    !EMAILVALID ? "focus:ring-red-400" : "focus:ring-green-400"
+                  }   `}
                 />
+                {/* SEND OTP */}
                 <button
                   onClick={sendOtp}
                   className={` px-3 py-2 rounded-xl text-white text-[12px] ${
-                    otpvalid
+                    EMAILVALID
                       ? "bg-gradient-to-r from-red-400 to-pink-500 hover:opacity-90"
                       : "bg-gray-600 cursor-not-allowed"
                   }`}
@@ -256,14 +283,18 @@ const [verifiedEmail, setVerifiedEmail] = useState(""); // stores verified email
               </>
             )}
           </div>
-
-          <Hash className="absolute left-3 top-8 text-gray-300" size={14} />
-
+          {/* HASH AND MAIL ICON */}
+          {visotp ? (
+            <Hash className="absolute left-3 top-8 text-gray-300" size={14} />
+          ) : (
+            <Mail className="absolute left-3 top-8 text-gray-300" size={14} />
+          )}
+          {/* EMAIL ERROR */}
           <div className="text-red-400 ">{regemailerror}</div>
         </div>
         <div className="w-[80%] mb-4 relative">
           <p className="text-white text-sm pb-1">Enter your password</p>
-
+          {/* PASSWORD */}
           <input
             value={registerpassword}
             type={ShowPasword ? "text" : "password"}
@@ -273,17 +304,21 @@ const [verifiedEmail, setVerifiedEmail] = useState(""); // stores verified email
               !ispassvalid ? "focus:ring-red-400" : "focus:ring-green-400"
             } `}
           />
-            <button
-                    type="button"
-                    onClick={() => setShowPasword(!ShowPasword)}
-                    className="absolute right-3 top-8 text-gray-300"
-                  >
-                    {ShowPasword ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
+          {/* SHOW AND HIDE PASSWORD */}
+          <button
+            type="button"
+            onClick={() => setShowPasword(!ShowPasword)}
+            className="absolute right-3 top-8 text-gray-300"
+          >
+            {/* EYE ICON */}
+            {!ShowPasword ? <EyeOff size={16} /> : <Eye size={16} />}
+          </button>
+          {/* PASSSWORD ICON */}
           <KeyRound className="absolute left-3 top-8 text-gray-300" size={14} />
-
+          {/* PASSWORD ERROR */}
           <div className="text-red-400 ">{regpasserror}</div>
         </div>
+        {/* REGISTRATION */}
         <button
           onClick={() => registerconfirm()}
           className={` w-[60%] py-2.5 text-white rounded-2xl text-xl ${
@@ -296,6 +331,7 @@ const [verifiedEmail, setVerifiedEmail] = useState(""); // stores verified email
         </button>
         <div className="text-white/80 mb-5">or continue with</div>
         <div>
+          {/* SOCIAL PALTFORM */}
           {!session && (
             <>
               <div className=" flex items-center justify-center gap-5">
